@@ -10,13 +10,28 @@ import java.util.List;
 public class ProductRepository {
     private List<Product> productData = new ArrayList<>();
 
-    public Product create(Product product){
+    public Product create(Product product) {
         productData.add(product);
         return product;
     }
 
+    public String delete(String productId) {
+        Product product = findById(productId);
+        productData.remove(product);
+        return productId;
+    }
+
     public Iterator<Product> findAll() {
         return productData.iterator();
+    }
+
+    private Product findById(String productId) {
+        for (Product product : productData) {
+            if (product.getProductId().equals(productId)) {
+                return product;
+            }
+        }
+        return null;
     }
 
 }
