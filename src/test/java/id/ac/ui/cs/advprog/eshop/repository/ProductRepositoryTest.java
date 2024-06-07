@@ -3,6 +3,7 @@ package id.ac.ui.cs.advprog.eshop.repository;
 import id.ac.ui.cs.advprog.eshop.model.Product;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -17,7 +18,6 @@ class ProductRepositoryTest {
     ProductRepository productRepository;
     @BeforeEach
     void SetUp(){
-
     }
 
     @Test
@@ -64,4 +64,49 @@ class ProductRepositoryTest {
         assertEquals(product2.getProductId(), savedProduct.getProductId());
         assertFalse(productIterator.hasNext());
     }
+
+    @Test
+    void testNonExistentProductDeletion() {
+
+        Product addedProduct = new Product();
+        addedProduct.setProductName("ProductExists");
+        addedProduct.setProductQuantity(10);
+        productRepository.create(addedProduct);
+
+        Product productToDelete = new Product();
+        productToDelete.setProductName("ProductDoesNotExist");
+        productToDelete.setProductQuantity(1);
+        productRepository.delete(productToDelete.getProductId());
+
+        Iterator<Product> productIterator = productRepository.findAll();
+        productIterator.next();
+        assertFalse(productIterator.hasNext());
+    }
+
+    @Test
+    void testEditProductIfIdDoesntExist() {
+        Product product = new Product();
+        product.setProductId("eb558e9f-1c39-460e-8860-71af6af63bd6");
+        product.setProductName("Sampo Cap Bambang");
+        product.setProductQuantity(70);
+        productRepository.create(product);
+
+        Product editedProduct = new Product();
+        editedProduct.setProductId("eb558e9f-1c39");
+        editedProduct.setProductName("Sampo Cap Bango");
+        editedProduct.setProductQuantity(-10);
+        Product uneditedProduct = productRepository.edit(editedProduct);
+
+        assertNull(uneditedProduct);
+    }
+
+    @Test
+    void shouldNotDeleteNonExistentProduct() {
+        productRepository.delete("eb558e9f-1c39-460e-8860-71af6af63bd6");
+
+        Iterator<Product> iterator = productRepository.findAll();
+        assertFalse(iterator.hasNext());
+    }
+
+
 }
